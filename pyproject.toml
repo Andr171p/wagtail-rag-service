@@ -1,0 +1,150 @@
+[project]
+name = "fastapi-website-rag"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "alembic>=1.16.5",
+    "asyncpg>=0.30.0",
+    "embeddings-service",
+    "fastapi[all]>=0.117.1",
+    "langchain>=0.3.27",
+    "langchain-gigachat>=0.3.12",
+    "langgraph>=0.6.7",
+    "mypy>=1.18.2",
+    "pgvector[sqlalchemy]>=0.4.1",
+    "redis>=6.4.0",
+    "ruff>=0.13.1",
+    "sqlalchemy>=2.0.43",
+]
+
+[tool.ruff]
+line-length = 99
+preview = true
+exclude = [
+    "migrations",
+    "migration",
+    "src/migrations",
+    "alembic.ini",
+    "**/__pycache__",
+    "**/.mypy_cache",
+    "**/.ruff_cache",
+    "**/.venv"
+]
+
+[tool.ruff.lint]
+select = [
+    "F",
+    "E",
+    "W",
+    "C90",
+    "I",
+    "N",
+    "UP",
+    "YTT",
+    "ASYNC",
+    "S",
+    "BLE",
+    "B",
+    "A",
+    "COM",
+    "C4",
+    "DTZ",
+    "T10",
+    "EXE",
+    "ISC",
+    "ICN",
+    "G",
+    "INP",
+    "PIE",
+    "T20",
+    "PYI",
+    "PT",
+    "Q",
+    "RSE",
+    "RET",
+    "SLF",
+    "SLOT",
+    "SIM",
+    "TID",
+    "INT",
+    "ARG",
+    "TD",
+    "FIX",
+    "ERA",
+    "PD",
+    "PGH",
+    "PL",
+    "TRY",
+    "FLY",
+    "NPY",
+    "AIR",
+    "PERF",
+    "FURB",
+    "LOG",
+    "RUF",
+]
+ignore = [
+    "S105",
+    "S101",
+    "B008",
+    "TRY201",
+    "PLW3201",
+    "N805",
+    "PTH",
+    "COM812",
+    "ISC001",
+    "TRY003",
+    "PT013",
+    "TID252",
+    "RUF001",
+    "RUF002",
+    "RUF003",
+    "ASYNC109",
+]
+
+[tool.ruff.lint.isort]
+section-order = [
+    "future",
+    "typings",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+
+[tool.ruff.lint.isort.sections]
+"typings" = ['typing']
+
+[tool.ruff.lint.pylint]
+max-args = 15
+max-returns = 10
+max-branches = 30
+
+# -- MyPy --
+[tool.mypy]
+ignore_missing_imports = true
+exclude = [
+    "src/migration",
+    "src/migrations",
+    "__samples__",
+    ".venv"
+]
+
+# -- Vulture --
+[tool.vulture]
+exclude = [
+    ".vscode/",
+    "__samples__/",
+    "tests",
+    ".venv"
+]
+ignore_names = [
+    "post",
+    "put",
+    "delete",
+    "head"
+]
+
+[tool.uv.sources]
+embeddings-service = { git = "https://github.com/Andr171p/embeddings-service.git" }
