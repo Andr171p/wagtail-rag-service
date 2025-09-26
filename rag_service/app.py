@@ -1,15 +1,20 @@
 from typing import Annotated, Final
 
+import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import APIRouter, FastAPI, Query, status
+from fastapi import APIRouter, FastAPI, Query, Request, status
+from fastapi.responses import JSONResponse
 from langchain_core.runnables import RunnableConfig
 
 from .database import init_database
+from .exceptions import CreationError, SearchError
 from .indexing import indexing_chain
 from .rag import State, rag_agent, retrieve_pages
 from .schemas import Message, Page, PageIndexable, Role
+
+logging.basicConfig(level=logging.INFO)
 
 
 @asynccontextmanager
@@ -60,6 +65,29 @@ async def answer(user_message: Message) -> Message:
     )
     state = await rag_agent.ainvoke({"query": user_message.text}, config=config)
     return Message(role=Role.AI, session_id=user_message.session_id, text=state["response"])
+
+
+@app.exception_handler(CreationError)
+def handle_creation_error(request: Request, exc: CreationError) -> JSONResponse:  # noqa: ARG001
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": str(exc)},
+    )
+
+
+@app.exception_handler(SearchError)
+def handle_search_error(request: Request, exc: SearchError) -> JSONResponse:  # noqa: ARG001
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": str(exc)},
+    )
+
+
+@app.exception_handler(ValueError)
+def handle_value_error(request: Request, exc: ValueError) -> JSONResponse:  # noqa: ARG001
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST, content={"detail": str(exc)},
+    )
 
 
 app.include_router(router)
